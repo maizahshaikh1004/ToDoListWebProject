@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+       /*.completed{
+            text-decoration: line-through;
+            color: grey;
+            border: 1px solid gray;
+        }
+       */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            color: #444;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #333;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            width: 50%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #f77f00;
+            box-shadow: 0 0 10px rgba(247, 127, 0, 0.4);
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+            background-color: #f77f00;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #fc4a1a;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Task Container */
+        #taskcontainer {
+            width: 90%;
+            margin: 20px auto;
+            background: #ffffffa8;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #f77f00;
+        }
+
+        span {
+            font-size: 1rem;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: grey;
+            border: 1px solid lightgrey;
+        }
+
+        /* Task Counters */
+        #taskcounters {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        /* Horizontal Rule */
+        hr {
+            width: 60%;
+            border: none;
+            border-top: 2px solid #ddd;
+            margin: 20px auto;
+        }
+    </style>
+    
+</head>
+<body>
+    <!--Creating the input box and add task button-->
+    <input type="text" name="task" id="task" placeholder="Enter Your Task"> <button onclick="add()">Add Task</button>
+    <!--Separate Div which will contain the tasks in the form of lists-->
+    <div >
+        <h2>My Tasks:</h2>
+        <ul id="taskcontainer"></ul>
+    </div>
+    <!--Horizontal rule-->
+    <hr>
+    <div id="taskcounters">
+    Completed: <span id="completed-counters">0</span> | Incomplete: <span id="incomplete-counters">0</span>
+    </div>
+    <script type="text/javascript">
+        
+        <!--take the taks from inputbox into a variable-->
+        const inputbox=document.getElementById("task"); 
+        const taskcontent=document.getElementById("taskcontainer");
+        function add(){
+            const tasks=inputbox.value.trim();
+
+            /*we are creating an li element in add()
+            the content in the li element will go with the help of innerHtml
+            after these all we need to append our li element in the ul tag 
+            after appending we want to clear the input box 
+           */
+            
+            const li=document.createElement("li");
+            li.innerHTML=`
+            <label>
+                <input id="chk" type="checkbox">
+                <span>${tasks}</span> 
+            </label>
+            <button id="edit-btn">Edit</button><button id="dlt-btn">Delete</button>
+            `;
+            taskcontainer.appendChild(li);
+            task.value="";
+
+            /*take all checkbox content,edit btn,dlt btn and actual text of tasks in 
+            different variables
+            */
+            const checkbox=li.querySelector("input");
+            const editbtn=li.querySelector("#edit-btn");
+            const dltbtn=li.querySelector("#dlt-btn");
+            const tasktext=li.querySelector("span");
+
+            /*when the checkbox will be clicked a function will be invoked that 
+            will create a class named completed and will make the checkbox checked
+            there is css coding in completed class that has strikethru and everything
+            there is also updatecntrs() function
+            */
+            checkbox.addEventListener("click",function(){li.classList.toggle("completed",checkbox.checked); 
+                updatecntrs();
+            });
+
+            /*edit button will call the prompt that will have the placeholder
+            as the task that is to be edited, the edited task is kept in variable
+            update, which will be then set as the text for the actual task text,
+            if you have already marked a task completed and then u are editing
+            then this will make the checkbox false and will remove that completed task
+            */
+            editbtn.addEventListener("click",function(){
+                const update=prompt("Edit Task:",tasktext.textContent);
+                if(update!==null){
+                    tasktext.textContent=update;
+                    li.classList.remove("completed");
+                    checkbox.checked=false;
+                }
+                
+            });
+
+            /*take the completed counters and 
+            incomplete counters in a variable
+            */
+            const completedcounters=document.getElementById("completed-counters");
+            const incompletecounters=document.getElementById("incomplete-counters");
+
+            /*take the lenght of completed and incomplete counters
+            into a variable, and then update the values of 
+            earlier variables using these function variables
+            */
+            function updatecntrs(){
+                const completedtasks=document.querySelectorAll(".completed").length;
+                const incompletetasks=document.querySelectorAll("li:not(.completed)").length;
+                completedcounters.textContent=completedtasks;
+                incompletecounters.textContent=incompletetasks;
+
+            }
+
+            /*when the dlt button is clicked a 
+            confirm box will be displayed, if its true only then
+            list element will be removed and the counters will be updated
+            */
+            dltbtn.addEventListener("click",function(){if(confirm("Are you sure to delete this task?")){
+                li.remove();
+                updatecntrs();
+            }});
+
+        }
+    </script>
+</body>
+</html>
